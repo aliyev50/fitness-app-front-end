@@ -1,35 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, createContext } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import NavBar from './components/NavBar/NavBar';
+import Landing from './components/Landing/Landing';
+import Dashboard from './components/Dashboard/Dashboard';
+import SignupForm from './components/SignupForm/SignupForm';
+import SigninForm from './components/SigninForm/SigninForm';
+import Meals from './components/Meals/Meals';
+import Profile from './components/Profile/Profile';
+import Workouts from './components/Workouts/Workouts';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+
+export const AuthedUserContext = createContext(null);
+
+const App = () => {
+  const [user, setUser] = useState(null);
+
+  const handleSignout = () => {
+    setUser(null);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <AuthedUserContext.Provider value={user}>
+      <NavBar handleSignout={handleSignout} />
+      <Routes>
+        {user ? (
+          <>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/meals" element={<Meals />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/workouts" element={<Workouts />} />
+          </>
+        ) : (
+          <>
+          
+            <Route path="/" element={<Landing />} />
+            
+            <Route path="/signup" element={<SignupForm setUser={setUser} />} />
+            <Route path="/signin" element={<SigninForm setUser={setUser} />} />
+          
+          </>
+        )}
+      </Routes>
+    </AuthedUserContext.Provider>
+  );
+};
 
-export default App
+export default App;
